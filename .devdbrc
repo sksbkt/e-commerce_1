@@ -1,0 +1,6 @@
+[
+  {
+    "type": "sqlite",
+    "path": "e:\\React_2\\e-commerce_1\\prisma\\dev.db"
+  }
+]

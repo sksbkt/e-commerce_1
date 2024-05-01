@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id                     String                 @id @default(uuid())
+  name                   String
+  priceInCents           Int
+  filePath               String
+  imagePath              String
+  description            String
+  isAvailableForPurchase Boolean                @default(true)
+  createdAt              DateTime               @default(now())
+  updateddAt             DateTime               @updatedAt
+  Orders                 Order[]
+  downloadVerification   DownloadVerification[]
+}
+
+model User {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  createdAt  DateTime @default(now())
+  updateddAt DateTime @updatedAt
+  orders     Order[]
+}
+
+model Order {
+  id               String   @id @default(uuid())
+  pricePaidInCents Int
+  createdAt        DateTime @default(now())
+  updateddAt       DateTime @updatedAt
+
+  userId    String
+  productId String
+  // ? with onDelete:Cascade when we delete a user we also delete all of the orders associated with it
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // ? with onDelete:Restrict it wont let use to delete a product that has orders associated with it
+  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+}
+
+model DownloadVerification {
+  id        String   @id @default(uuid())
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  productId String
+  prodtct   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
