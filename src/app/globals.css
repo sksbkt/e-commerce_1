@@ -73,4 +73,15 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* ? Disables default appearance of number inputs */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+/* Custom CSS */
+.disable-tap-highlight {
+  -webkit-tap-highlight-color: transparent; /* Disable tap highlight */
 }
