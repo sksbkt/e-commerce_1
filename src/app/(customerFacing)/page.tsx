@@ -1,32 +1,53 @@
 import ProductCard, { ProductCardSkeleton } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import db from "@/db/db";
+import { cache } from "@/lib/cache";
 import { wait } from "@/lib/utils";
 import { Product } from "@prisma/client";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
-function getMostPopular() {
-  return db.product.findMany({
-    where: { isAvailableForPurchase: true },
-    orderBy: { Orders: { _count: "desc" } },
-    take: 6,
-  });
-}
-function getNewestProducts() {
-  return db.product.findMany({
-    where: { isAvailableForPurchase: true },
-    orderBy: { createdAt: "desc" },
-    take: 6,
-  });
-}
+// * We are cashing it now
+// function getMostPopular() {
+//   return db.product.findMany({
+//     where: { isAvailableForPurchase: true },
+//     orderBy: { Orders: { _count: "desc" } },
+//     take: 6,
+//   });
+// }
+
+const getMostPopularProducts = cache(
+  () => {
+    return db.product.findMany({
+      where: { isAvailableForPurchase: true },
+      orderBy: { Orders: { _count: "desc" } },
+      take: 6,
+    });
+  },
+  ["/", "getMostPopularProducts"],
+  { revalidate: 60 * 60 * 24 },
+);
+
+const getNewestProducts = cache(
+  () => {
+    return db.product.findMany({
+      where: { isAvailableForPurchase: true },
+      orderBy: { createdAt: "desc" },
+      take: 6,
+    });
+  },
+  // ? The cache key is an array of strings that uniquely identifies the cached data
+  // ? This key is used to share the cached data across instances where the same key is used
+  ["/", "getNewestProducts"],
+  { revalidate: 60 * 60 * 24 },
+);
 
 export default function HomePage() {
   return (
     <main className="space-y-12">
       <ProductGridSection
-        productsFetcher={getMostPopular}
+        productsFetcher={getMostPopularProducts}
         title={"Most popular"}
       />
       <ProductGridSection
