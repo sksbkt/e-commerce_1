@@ -51,5 +51,5 @@ model DownloadVerification {
   expiresAt DateTime
   createdAt DateTime @default(now())
   productId String
-  prodtct   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
