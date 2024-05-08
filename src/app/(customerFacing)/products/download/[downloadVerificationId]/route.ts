@@ -11,10 +11,11 @@ export async function GET(
     where: { id: downloadVerificationId, expiresAt: { gt: new Date() } },
     select: { product: { select: { filePath: true, name: true } } },
   });
-  if (data == null)
+  if (data == null) {
     return NextResponse.redirect(
       new URL("/products/download/expired", req.url),
     );
+  }
   const { size } = await fs.stat(data.product.filePath);
   const file = await fs.readFile(data.product.filePath);
   const extension = data.product.filePath.split(".").pop();
