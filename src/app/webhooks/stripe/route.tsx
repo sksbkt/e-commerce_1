@@ -1,4 +1,8 @@
+// * RUN: stripe local testing listener for production
+// * stripe listen--forward - to localhost: 3000 / webhooks / stripe
+
 import db from "@/db/db";
+import PurchaseReceiptEmail from "@/email/PurchaseReceipt";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import Stripe from "stripe";
@@ -28,6 +32,7 @@ export async function POST(req: NextRequest) {
       email,
       orders: { create: { productId, pricePaidInCents } },
     };
+
     const {
       orders: [order],
     } =
@@ -44,13 +49,18 @@ export async function POST(req: NextRequest) {
         expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
       },
     });
-    console.log(email);
 
     await resend.emails.send({
       from: `support <${process.env.SENDER_EMAIL}>`,
       to: email,
       subject: "Order confirmation",
-      react: <h1>Hi</h1>,
+      react: (
+        <PurchaseReceiptEmail
+          product={product}
+          order={order}
+          downloadVerificationId={downloadVerification.id}
+        />
+      ),
     });
   }
   return new NextResponse();

@@ -1,3 +1,13 @@
+# Running the project
+
+Run stripe local listener first: 
+stripe listen --forward-to localhost:3000/webhooks/stripe
+then:
+npm run dev
+
+for testing react-email:
+npm run email
+
 # E-Commerce Project
 
 Welcome to our e-commerce project! This README serves as a comprehensive guide to understanding the project structure, dependencies, and how to get started.
